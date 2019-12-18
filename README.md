@@ -13,6 +13,18 @@ If strange symbols appears, have a look to [this however not fully comprehensive
 
 ## How to use it
 
+If you want simply try it out, you can clone this repository and run the `TestLogger.bash` script as such, or prepending `VERBOSE=TRACE` to activate all levels of output (or something according to the table below).
+
+If you plan to include the logger in your project, feel free to do so.
+It should be enough to add the `Logger.bash` file to your codebase.
+In any case, please,
+* give credit to the author e.g. in the `README` of your repository;
+* leave the license and copyright notice in the `Logger.bash` file, although you might prepend there the header of your codebase.
+
+---
+
+### Instructions for the user
+
 This logger has been implemented with the aim to provide functionality once sourced in another script.
 Therefore, it simply contains a bunch of functions which become available into your script, once the logger has been sourced.
 
@@ -28,6 +40,7 @@ Therefore, it simply contains a bunch of functions which become available into y
    * `PrintInternalAndExit`
 1. Each function must be followed by at least one argument.
    Each argument is printed to the fd 3 (which duplicates the standard output at the beginning) on a new line, prepending to the first argument the level label.
+   **This means that you can use the logger in a function and still capture its standard output via the `$(call_to_function)` syntax.**
 1. You can pass either of the following command-line argument to each function to slightly change its behaviour.
    In this case separate the message from the options via `--`.
    * `-l` &ensp; :arrow_right: &ensp; to suppress label printing (space is printed instead)
@@ -62,3 +75,7 @@ Therefore, it simply contains a bunch of functions which become available into y
     - [ ] Offer date activation (now only the level label is printed)
  - [ ] Explore the possibility to implement a "level factory" to give possibility to the user to create their levels
  
+## A similar logger in C++
+
+The idea to implement this logger in this way came to my mind from the fact that I already sometimes use a similar tool in `C++` codebases, which is called **Einhard** and which is [freely available](https://gitlab.com/Marix/Einhard).
+Check it out!
