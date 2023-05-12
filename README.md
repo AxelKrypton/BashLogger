@@ -41,6 +41,9 @@ Therefore, it simply contains a bunch of functions which become available into y
 1. Each function must be followed by at least one argument.
    Each argument is printed to the fd 3 (which duplicates the standard output at the beginning) on a new line, prepending to the first argument the level label.
    **This means that you can use the logger in a function and still capture its standard output via the `$(call_to_function)` syntax.**
+1. By default, both `PrintFatalAndExit` and `PrintInternalAndExit` will exit with exit code 1 (general failure).
+   You can however use the `exit_code` variable to change this either globally or on a per-case basis.
+   E.g. `exit_code=42 PrintFatalAndExit "Oh no!"` will use 42 as exit code (and the `exit_code` variable will not be changed in the calling environment).
 1. You can pass either of the following command-line argument to each function to slightly change its behaviour.
    In this case separate the message from the options via `--`.
    * `-l` &ensp; :arrow_right: &ensp; to suppress label printing (space is printed instead)

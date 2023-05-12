@@ -1,5 +1,6 @@
 #
-#  Copyright (c) 2019 Alessandro Sciarra <sciarra@itp.uni-frankfurt.de>
+#  Copyright (c) 2019,2023
+#    Alessandro Sciarra <sciarra@itp.uni-frankfurt.de>
 #
 #  This file is part of BashLogger.
 #
@@ -150,7 +151,7 @@ function __static__Logger()
     printf "${restoreDefault}"
     exec 1>&4- # restore fd 1 and close fd 4 and not close fd 3 (it must stay open, see top of the file!)
     if [[ ${label} =~ ^(FATAL|INTERNAL)$ ]]; then
-        exit "${userFatalExitCode:-1}"
+        exit "${exit_code:-1}"
     fi
 }
 
