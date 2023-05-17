@@ -164,22 +164,22 @@ function __static__IsLevelOn()
         return 0
     fi
     # VERBOSE environment variable defines how verbose the output should be:
-    #  - unset or empty -> till INFO (no DEBUG TRACE)
+    #  - unset, empty, invalid value -> till INFO (no DEBUG TRACE)
     #  - numeric -> till that level (1=ERROR, 2=WARNING, ...)
     #  - string  -> till that level
     local loggerLevels loggerLevelsOn level index
     loggerLevels=( [1]='ERROR' [2]='WARNING' [3]='ATTENTION' [4]='INFO' [5]='DEBUG' [6]='TRACE' )
     loggerLevelsOn=()
-    if [[ ${VERBOSE} =~ ^[0-9]+$ ]]; then
+    if [[ ${VERBOSE-} =~ ^[0-9]+$ ]]; then
         loggerLevelsOn=( "${loggerLevels[@]:1:VERBOSE}" )
-    elif [[ ${VERBOSE} =~ ^(ERROR|WARNING|ATTENTION|INFO|DEBUG|TRACE)$ ]]; then
+    elif [[ ${VERBOSE-} =~ ^(ERROR|WARNING|ATTENTION|INFO|DEBUG|TRACE)$ ]]; then
         for level in "${loggerLevels[@]}"; do
             loggerLevelsOn+=( "${level}" )
-            if [[ ${VERBOSE} = "${level}" ]]; then
+            if [[ ${VERBOSE-} = "${level}" ]]; then
                 break
             fi
         done
-    elif [[ ${VERBOSE} =~ ^(FATAL|INTERNAL)$ ]]; then
+    elif [[ ${VERBOSE-} =~ ^(FATAL|INTERNAL)$ ]]; then
         loggerLevelsOn=( 'FATAL' )
     else
         loggerLevelsOn=( 'FATAL' 'ERROR' 'WARNING' 'ATTENTION' 'INFO' )
