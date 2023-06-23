@@ -31,7 +31,12 @@ By default, errors messages (`ERROR`, `FATAL` and `INTERNAL`) are printed to sta
 
 1. Source the logger in your script via `source /path/to/Logger.bash [OPTIONS...]` or via `. /path/to/Logger.bash`.
    Available options at source time:
-   * `--fd N` &ensp; :arrow_right: &ensp; use `N` as logger output file descriptor, with `0<N<255` (default: `N=42`)
+
+   | Option | Description |
+   | :----: | :---------: |
+   | `--fd N` | Use `N` as logger output file descriptor, with `0<N<255` (default: `N=42`). |
+   | `--default-exit-code N` | Use `N` as default exit code for `FATAL` and `INTERNAL`, with `0≤N≤255` (default: `N=1`). The `exit_code` variable can be used to change this either globally or on a per-case basis (see below). |
+
 1. Use either of the provided functions when you wish to print something to the user:
    * `PrintTrace`
    * `PrintDebug`
@@ -76,8 +81,9 @@ By default, errors messages (`ERROR`, `FATAL` and `INTERNAL`) are printed to sta
 ## Features planned to be added
 
  - [ ] Implement mechanism to highlight part of message
- - [ ] Add command-line option to customize ar source time: 
-    - [x] Offer `fd` customization (now fd 3 is always used)
+ - [ ] Add command-line option to customize at source time:
+    - [x] Offer `fd` customization
+    - [x] Offer default exit code customization
     - [ ] Offer label length customization (now fixed)
     - [ ] Offer level color customization (now fixed)
     - [ ] Offer date activation (now only the level label is printed)

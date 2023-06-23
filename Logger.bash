@@ -33,17 +33,24 @@
 #
 if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
     BSHLGGR_outputFd=42
+    BSHLGGR_defaultExitCode=1
     while [[ $# -gt 0 ]]; do
         case "$1" in
             --fd )
-                if [[ $2 =~ ^(-|$) ]]; then
-                    printf "Error sourcing BashLogger. Missing value of '$1' option.\n"
-                    return 1
-                elif [[ ! $2 =~ ^[1-9][0-9]*$ ]] || (( $2>254 )); then
+                if [[ ! $2 =~ ^[1-9][0-9]*$ ]] || (( $2>254 )); then
                     printf "Error sourcing BashLogger. '$1' option needs an integer value between 1 and 254.\n"
                     return 1
                 else
                     BSHLGGR_outputFd=$2
+                    shift 2
+                fi
+                ;;
+            --default-exit-code )
+                if [[ ! $2 =~ ^[0-9]+$ ]] || (( $2>255 )); then
+                    printf "Error sourcing BashLogger. '$1' option needs an integer value between 0 and 255.\n"
+                    return 1
+                else
+                    BSHLGGR_defaultExitCode=$2
                     shift 2
                 fi
                 ;;
@@ -61,6 +68,7 @@ if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
     else
         eval "exec ${BSHLGGR_outputFd}>&1"
     fi
+    readonly BSHLGGR_outputFd BSHLGGR_defaultExitCode
 fi
 
 function PrintTrace()
@@ -185,7 +193,7 @@ function __static__Logger()
     printf "${restoreDefault}"
     exec 1>&4- # restore fd 1 and close fd 4 and not close chosen fd (it must stay open, see top of the file!)
     if [[ ${label} =~ ^(FATAL|INTERNAL)$ ]]; then
-        exit "${exit_code:-1}"
+        exit "${exit_code:-${BSHLGGR_defaultExitCode}}"
     fi
 }
 
