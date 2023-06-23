@@ -21,15 +21,15 @@
 trap 'printf "\n"' EXIT
 source Logger.bash "$@" || exit 1
 
-PrintTrace            '\nTrace message '       --emph 'highlighted' ' VS normal'
-PrintDebug            '\nDebug message '       --emph 'highlighted' ' VS normal'
-PrintInfo             '\nInformation message ' --emph 'highlighted' ' VS normal'
-PrintInfo             '\nTrailing' '--emph'
-PrintInfo             --emph '--emph'
-PrintInfo             --emph
-PrintInfo             ''
-PrintAttention        '\n' 'Attention message '   --emph 'highlighted' ' VS normal'
-PrintWarning          '\n' 'Warning message '     --emph 'highlighted' ' VS normal'
-PrintError            '\n' 'Error '               --emph 'highlighted' ' VS normal'
-( PrintFatalAndExit   '\n' 'Fatal error exit! '   --emph 'highlighted' ' VS normal' )
-PrintInternalAndExit  '\n' 'Developer error '     --emph 'highlighted' ' VS normal'
+Print_Trace              '\nTrace message '       --emph 'highlighted' ' VS normal'
+Print_Debug              '\nDebug message '       --emph 'highlighted' ' VS normal'
+Print_Info               '\nInformation message ' --emph 'highlighted' ' VS normal'
+Print_Info               '\nTrailing' '--emph'
+Print_Info               --emph '--emph'
+Print_Info               --emph
+Print_Info               ''
+Print_Attention          '\n' 'Attention message '   --emph 'highlighted' ' VS normal'
+Print_Warning            '\n' 'Warning message '     --emph 'highlighted' ' VS normal'
+Print_Error              '\n' 'Error '               --emph 'highlighted' ' VS normal'
+( Print_Fatal_And_Exit   '\n' 'Fatal error exit! '   --emph 'highlighted' ' VS normal' )
+Print_Internal_And_Exit  '\n' 'Developer error '     --emph 'highlighted' ' VS normal'

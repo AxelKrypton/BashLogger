@@ -29,8 +29,7 @@ This logger has been implemented with the aim to provide functionality once sour
 Therefore, it simply contains a bunch of functions which become available into your script, once the logger has been sourced.
 By default, errors messages (`ERROR`, `FATAL` and `INTERNAL`) are printed to standard error, while the other ones to a customizable file descriptor.
 
-1. Source the logger in your script via `source /path/to/Logger.bash [OPTIONS...]` or via `. /path/to/Logger.bash`.
-
+1. Source the logger in your script via `source /path/to/Logger.bash [OPTIONS...]`.
    #### Available options at source time:
 
    **`--fd N`**  
@@ -38,16 +37,17 @@ By default, errors messages (`ERROR`, `FATAL` and `INTERNAL`) are printed to sta
 
    **`--default-exit-code N`**  
    Use `N` as default exit code for `FATAL` and `INTERNAL`, with `0≤N≤255` (default: `N=1`). The `exit_code` variable can be used to change this either globally or on a per-case basis (see below).
-
 1. Use either of the provided functions when you wish to print something to the user:
-   * `PrintTrace`
-   * `PrintDebug`
-   * `PrintInfo`
-   * `PrintAttention`
-   * `PrintWarning`
-   * `PrintError`
-   * `PrintFatalAndExit`
-   * `PrintInternalAndExit`
+   * `PrintTrace` or `Print_Trace`
+   * `PrintDebug` or `Print_Debug`
+   * `PrintInfo` or `Print_Info`
+   * `PrintAttention` or `Print_Attention`
+   * `PrintWarning` or `Print_Warning`
+   * `PrintError` or `Print_Error`
+   * `PrintFatalAndExit` or `Print_Fatal_And_Exit`
+   * `PrintInternalAndExit` or `Print_Internal_And_Exit`
+   
+   Note that either of the two syntaxes produces identical results and the reason both are provided is that then you might pick up that with a name closer to the convention used in your codebase.
 1. Each function must be followed by at least one argument (possibly empty, but not made of '\n' only).
    Each argument is printed on a new line, prepending the level label to the first argument and just spaces to the following ones.
    Any argument can be prepended by `--emph` and this makes the following string be emphasized, i.e. printed in a standing out color (run the `TestLogger.bash` script to get an example).

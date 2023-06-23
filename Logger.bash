@@ -75,40 +75,72 @@ function PrintTrace()
 {
     __static__Logger 'TRACE' "$@"
 }
+function Print_Trace()
+{
+    PrintTrace "$@"
+}
 
 function PrintDebug()
 {
     __static__Logger 'DEBUG' "$@"
+}
+function Print_Debug()
+{
+    PrintDebug "$@"
 }
 
 function PrintInfo()
 {
     __static__Logger 'INFO' "$@"
 }
+function Print_Info()
+{
+    PrintInfo "$@"
+}
 
 function PrintAttention()
 {
     __static__Logger 'ATTENTION' "$@"
+}
+function Print_Attention()
+{
+    PrintAttention "$@"
 }
 
 function PrintWarning()
 {
     __static__Logger 'WARNING' "$@"
 }
+function Print_Warning()
+{
+    PrintWarning "$@"
+}
 
 function PrintError()
 {
     __static__Logger 'ERROR' "$@"
+}
+function Print_Error()
+{
+    PrintError "$@"
 }
 
 function PrintFatalAndExit()
 {
     __static__Logger 'FATAL' "$@"
 }
+function Print_Fatal_And_Exit()
+{
+    PrintFatalAndExit "$@"
+}
 
 function PrintInternalAndExit()
 {
     __static__Logger 'INTERNAL' "$@"
+}
+function Print_Internal_And_Exit()
+{
+    PrintInternalAndExit "$@"
 }
 
 function __static__Logger()
@@ -314,6 +346,14 @@ readonly -f \
          PrintError \
          PrintFatalAndExit \
          PrintInternalAndExit \
+         Print_Trace \
+         Print_Debug \
+         Print_Info \
+         Print_Attention \
+         Print_Warning \
+         Print_Error \
+         Print_Fatal_And_Exit \
+         Print_Internal_And_Exit \
          __static__Logger \
          __static__IsLevelOn \
          __static__IsElementInArray
