@@ -19,18 +19,48 @@
 #
 #----------------------------------------------------------------------------------------
 #
-# The logger will print output to new file descriptor 3 to be able to use the logger in
-# functions that "return" printing to stdout to be called in $().
+# The logger will print output to the chosen file descriptor (by default 42). This is
+# done (instead of simply let it print to standard output) to be able to use the logger
+# in functions that "return" by printing to stdout and that are meant to be called in $().
 #
-# ATTENTION: It might be checked if fd 3 exists and in case open it in the Logger itself.
-#            However, if the first Logger call is done in a subshell, the fd 3 is not
-#            open globally for the script and, therefore, we should ensure to open the
-#            fd 3 for the script. We do then this at source time.
+# ATTENTION: It might be checked if the chosen fd exists and in case open it in the Logger
+#            function itself. However, if the first Logger call is done in a subshell, then
+#            the chosen fd would not be open globally for the script and following calls to
+#            the Logger would fail. Hence, we open the fd at source time and not close it
+#            in the Logger.
 #
 # NOTE: Nothing is done if this file is executed and not sourced!
 #
 if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-    exec 3>&1
+    BSHLGGR_outputFd=42
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --fd )
+                if [[ $2 =~ ^(-|$) ]]; then
+                    printf "Error sourcing BashLogger. Missing value of '$1' option.\n"
+                    return 1
+                elif [[ ! $2 =~ ^[1-9][0-9]*$ ]] || (( $2>254 )); then
+                    printf "Error sourcing BashLogger. '$1' option needs an integer value between 1 and 254.\n"
+                    return 1
+                else
+                    BSHLGGR_outputFd=$2
+                    shift 2
+                fi
+                ;;
+            *)
+                printf "Error sourcing BashLogger. Unknown option '$1'.\n"
+                return 1
+                ;;
+        esac
+    done
+    # Probably redundant check, but we want guarantee that 'eval' is safe to use here
+    # e.g. that the BSHLGGR_outputFd cannot be set to '; rm -rf /; #' (AAARGH!).
+    if [[ ! ${BSHLGGR_outputFd} =~ ^[1-9][0-9]*$ ]]; then
+        printf "Unexpected error sourcing BashLogger. Please contact developers.\n"
+        return 1
+    else
+        eval "exec ${BSHLGGR_outputFd}>&1"
+    fi
 fi
 
 function PrintTrace()
@@ -92,9 +122,13 @@ function __static__Logger()
     case "${label}" in
         ERROR|FATAL )
             color='\e[91m'
-            exec 1>&2 ;; # here stdout to stderr!
+            # ;;& means go on in case matching following patterns
+            ;;&
         INTERNAL )
-            color='\e[38;5;202m' ;;& # ;;& means go on in case matching following -> do *)
+            color='\e[38;5;202m'
+            ;;&
+        ERROR|FATAL|INTERNAL )
+            exec 1>&2 ;; # here stdout to stderr!
         INFO )
             color='\e[92m' ;;&
         ATTENTION )
@@ -106,7 +140,7 @@ function __static__Logger()
         TRACE )
             color='\e[38;5;247m' ;;&
         * )
-            exec 1>&3 ;; # here stdout to fd 3!
+            exec 1>&"${BSHLGGR_outputFd}" ;; # here stdout to chosen fd
     esac
     if __static__IsElementInArray '--' "$@"; then
         while [[ "$1" != '--' ]]; do
@@ -149,7 +183,7 @@ function __static__Logger()
         printf "${labelToBePrinted//?/ } Please, contact developers.\n"
     fi
     printf "${restoreDefault}"
-    exec 1>&4- # restore fd 1 and close fd 4 and not close fd 3 (it must stay open, see top of the file!)
+    exec 1>&4- # restore fd 1 and close fd 4 and not close chosen fd (it must stay open, see top of the file!)
     if [[ ${label} =~ ^(FATAL|INTERNAL)$ ]]; then
         exit "${exit_code:-1}"
     fi

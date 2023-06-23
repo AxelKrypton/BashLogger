@@ -27,8 +27,11 @@ In any case, please,
 
 This logger has been implemented with the aim to provide functionality once sourced in another script.
 Therefore, it simply contains a bunch of functions which become available into your script, once the logger has been sourced.
+By default, errors messages (`ERROR`, `FATAL` and `INTERNAL`) are printed to standard error, while the other ones to a customizable file descriptor.
 
-1. Source the logger in your script via `source /path/to/Logger.bash` or via `. /path/to/Logger.bash`.
+1. Source the logger in your script via `source /path/to/Logger.bash [OPTIONS...]` or via `. /path/to/Logger.bash`.
+   Available options at source time:
+   * `--fd N` &ensp; :arrow_right: &ensp; use `N` as logger output file descriptor, with `0<N<255` (default: `N=42`)
 1. Use either of the provided functions when you wish to print something to the user:
    * `PrintTrace`
    * `PrintDebug`
@@ -39,8 +42,9 @@ Therefore, it simply contains a bunch of functions which become available into y
    * `PrintFatalAndExit`
    * `PrintInternalAndExit`
 1. Each function must be followed by at least one argument.
-   Each argument is printed to the fd 3 (which duplicates the standard output at the beginning) on a new line, prepending to the first argument the level label.
+   Each argument is printed to the chosen fd (which duplicates the standard output at the beginning) on a new line, prepending to the first argument the level label.
    **This means that you can use the logger in a function and still capture its standard output via the `$(call_to_function)` syntax.**
+   This works because command expansion `$()` captures the standard output only!
 1. By default, both `PrintFatalAndExit` and `PrintInternalAndExit` will exit with exit code 1 (general failure).
    You can however use the `exit_code` variable to change this either globally or on a per-case basis.
    E.g. `exit_code=42 PrintFatalAndExit "Oh no!"` will use 42 as exit code (and the `exit_code` variable will not be changed in the calling environment).
@@ -71,8 +75,9 @@ Therefore, it simply contains a bunch of functions which become available into y
 
 ## Features planned to be added
 
+ - [ ] Implement mechanism to highlight part of message
  - [ ] Add command-line option to customize ar source time: 
-    - [ ] Offer `fd` customization (now fd 3 is always used)
+    - [x] Offer `fd` customization (now fd 3 is always used)
     - [ ] Offer label length customization (now fixed)
     - [ ] Offer level color customization (now fixed)
     - [ ] Offer date activation (now only the level label is printed)

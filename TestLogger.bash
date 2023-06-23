@@ -18,7 +18,7 @@
 #  along with BashLogger. If not, see <https://www.gnu.org/licenses/>.
 #
 
-source Logger.bash
+source Logger.bash "$@" || exit 1
 
 PrintTrace            "Trace message"
 PrintDebug            "Debug message"
