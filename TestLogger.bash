@@ -18,13 +18,18 @@
 #  along with BashLogger. If not, see <https://www.gnu.org/licenses/>.
 #
 
+trap 'printf "\n"' EXIT
 source Logger.bash "$@" || exit 1
 
-PrintTrace            "Trace message"
-PrintDebug            "Debug message"
-PrintInfo             "Information message"
-PrintAttention        "Attention message"
-PrintWarning          "Warning message"
-PrintError            "Error"
-( PrintFatalAndExit   "Fatal error, exit!" )
-PrintInternalAndExit  "Internal, for developer error"
+PrintTrace            '\nTrace message '       --emph 'highlighted' ' VS normal'
+PrintDebug            '\nDebug message '       --emph 'highlighted' ' VS normal'
+PrintInfo             '\nInformation message ' --emph 'highlighted' ' VS normal'
+PrintInfo             '\nTrailing' '--emph'
+PrintInfo             --emph '--emph'
+PrintInfo             --emph
+PrintInfo             ''
+PrintAttention        '\n' 'Attention message '   --emph 'highlighted' ' VS normal'
+PrintWarning          '\n' 'Warning message '     --emph 'highlighted' ' VS normal'
+PrintError            '\n' 'Error '               --emph 'highlighted' ' VS normal'
+( PrintFatalAndExit   '\n' 'Fatal error exit! '   --emph 'highlighted' ' VS normal' )
+PrintInternalAndExit  '\n' 'Developer error '     --emph 'highlighted' ' VS normal'

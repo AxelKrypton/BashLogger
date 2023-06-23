@@ -30,12 +30,14 @@ Therefore, it simply contains a bunch of functions which become available into y
 By default, errors messages (`ERROR`, `FATAL` and `INTERNAL`) are printed to standard error, while the other ones to a customizable file descriptor.
 
 1. Source the logger in your script via `source /path/to/Logger.bash [OPTIONS...]` or via `. /path/to/Logger.bash`.
-   Available options at source time:
 
-   | Option | Description |
-   | :----: | :---------: |
-   | `--fd N` | Use `N` as logger output file descriptor, with `0<N<255` (default: `N=42`). |
-   | `--default-exit-code N` | Use `N` as default exit code for `FATAL` and `INTERNAL`, with `0≤N≤255` (default: `N=1`). The `exit_code` variable can be used to change this either globally or on a per-case basis (see below). |
+   #### Available options at source time:
+
+   **`--fd N`**  
+   Use `N` as logger output file descriptor, with `0<N<255` (default: `N=42`).
+
+   **`--default-exit-code N`**  
+   Use `N` as default exit code for `FATAL` and `INTERNAL`, with `0≤N≤255` (default: `N=1`). The `exit_code` variable can be used to change this either globally or on a per-case basis (see below).
 
 1. Use either of the provided functions when you wish to print something to the user:
    * `PrintTrace`
@@ -46,8 +48,12 @@ By default, errors messages (`ERROR`, `FATAL` and `INTERNAL`) are printed to sta
    * `PrintError`
    * `PrintFatalAndExit`
    * `PrintInternalAndExit`
-1. Each function must be followed by at least one argument.
-   Each argument is printed to the chosen fd (which duplicates the standard output at the beginning) on a new line, prepending to the first argument the level label.
+1. Each function must be followed by at least one argument (possibly empty, but not made of '\n' only).
+   Each argument is printed on a new line, prepending the level label to the first argument and just spaces to the following ones.
+   Any argument can be prepended by `--emph` and this makes the following string be emphasized, i.e. printed in a standing out color (run the `TestLogger.bash` script to get an example).
+   Note that a trailing `--emph` argument will be printed literally in the default level color, as well as if `--emph` is given twice in a row (this time is printed in the emphasized color).
+
+   Each argument is printed to the chosen fd (which duplicates the standard output when the logger is sourced).
    **This means that you can use the logger in a function and still capture its standard output via the `$(call_to_function)` syntax.**
    This works because command expansion `$()` captures the standard output only!
 1. By default, both `PrintFatalAndExit` and `PrintInternalAndExit` will exit with exit code 1 (general failure).
@@ -80,13 +86,14 @@ By default, errors messages (`ERROR`, `FATAL` and `INTERNAL`) are printed to sta
 
 ## Features planned to be added
 
- - [ ] Implement mechanism to highlight part of message
+ - [x] Implement mechanism to highlight part of message
  - [ ] Add command-line option to customize at source time:
     - [x] Offer `fd` customization
     - [x] Offer default exit code customization
     - [ ] Offer label length customization (now fixed)
     - [ ] Offer level color customization (now fixed)
     - [ ] Offer date activation (now only the level label is printed)
+ - [ ] Allow literal `--` to be used and be printed (now it separates options from strings)
  - [ ] Explore the possibility to implement a "level factory" to give possibility to the user to create their levels
  
 ## A similar logger in C++

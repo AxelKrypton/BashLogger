@@ -116,7 +116,7 @@ function __static__Logger()
     if [[ $# -lt 1 ]]; then
         __static__Logger 'INTERNAL' "${FUNCNAME} called without label!"
     fi
-    local label labelLength labelToBePrinted color string finalEndline restoreDefault
+    local label labelLength labelToBePrinted color emphColor finalEndline restoreDefault
     finalEndline='\n'
     restoreDefault='\e[0m'
     labelLength=10
@@ -129,24 +129,28 @@ function __static__Logger()
     exec 4>&1 # duplicate fd 1 to restore it later
     case "${label}" in
         ERROR|FATAL )
-            color='\e[91m'
             # ;;& means go on in case matching following patterns
-            ;;&
+            color='\e[91m' ;;&
         INTERNAL )
-            color='\e[38;5;202m'
-            ;;&
+            color='\e[38;5;202m' ;;&
         ERROR|FATAL|INTERNAL )
+            emphColor='\e[93m'
             exec 1>&2 ;; # here stdout to stderr!
         INFO )
-            color='\e[92m' ;;&
+            color='\e[92m'
+            emphColor='\e[96m' ;;&
         ATTENTION )
-            color='\e[38;5;200m' ;;&
+            color='\e[38;5;200m'
+            emphColor='\e[38;5;141m' ;;&
         WARNING )
-            color='\e[93m' ;;&
+            color='\e[93m'
+            emphColor='\e[38;5;202m' ;;&
         DEBUG )
-            color='\e[38;5;38m' ;;&
+            color='\e[38;5;38m'
+            emphColor='\e[38;5;48m' ;;&
         TRACE )
-            color='\e[38;5;247m' ;;&
+            color='\e[38;5;247m'
+            emphColor='\e[38;5;256m' ;;&
         * )
             exec 1>&"${BSHLGGR_outputFd}" ;; # here stdout to chosen fd
     esac
@@ -168,25 +172,76 @@ function __static__Logger()
         done
         shift
     fi
-    if [[ $# -eq 0 ]]; then
-        __static__Logger 'INTERNAL' "${FUNCNAME} called without message!"
-    fi
+    # Print out initial new-lines before label suppressing first argument if it was endlines only
     while [[ $1 =~ ^\\n ]]; do
         printf '\n'
-        set -- "${1/#\\n/}" "${@:2}"
-    done
-    printf "\e[1m${color}${labelToBePrinted}\e[22m ${1//%/%%}"
-    shift
-    if [[ $# -eq 0 ]]; then
-        printf "${finalEndline}" # If nothing more to print use 'finalEndline'
-    else
-        printf '\n'
-        while [[ $# -gt 1 ]]; do
-            printf "${labelToBePrinted//?/ } ${1//%/%%}\n"
+        if [[ "${1/#\\n/}" = '' ]]; then
             shift
-        done
-        printf "${labelToBePrinted//?/ } ${1//%/%%}${finalEndline}"
+        else
+            set -- "${1/#\\n/}" "${@:2}"
+        fi
+    done
+    # Ensure something to print was given
+    if [[ $# -eq 0 ]]; then
+        __static__Logger 'INTERNAL' "${FUNCNAME} called without message (or with new lines only)!"
     fi
+    # Parse all arguments and save messages for later, possibly modified
+    local messagesToBePrinted emphNextString lastStringWasEmph indentation index
+    messagesToBePrinted=()
+    emphNextString='FALSE'
+    lastStringWasEmph='FALSE'
+    indentation=''
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --emph )
+                # Here two cases should be handled: either '--emph' is an option or a string
+                #   -> it is literal if the last command line option or if following the option
+                #   -> it is an option otherwise
+                # Use a fallthrough to continue matching in the case construct and use *) case
+                # to print. However, shift and continue must be given if '--emph' was an option.
+                if [[ $# -eq 1 || ${emphNextString} = 'TRUE' ]]; then
+                    :
+                else
+                    emphNextString='TRUE'
+                    shift
+                    continue
+                fi
+                ;;&
+            *)
+                if [[ ${#messagesToBePrinted[@]} -gt 0 ]]; then
+                    indentation="${labelToBePrinted//?/ } "
+                fi
+                # Set color and replace % by %% for later printf
+                if [[ ${emphNextString} = 'TRUE' ]]; then
+                    messagesToBePrinted+=( "${emphColor}${1//%/%%}" )
+                    lastStringWasEmph='TRUE'
+                else
+                    if [[ ${lastStringWasEmph} = 'FALSE' ]]; then
+                        if [[ ${#messagesToBePrinted[@]} -gt 0 ]]; then
+                            messagesToBePrinted[-1]+='\n'
+                        fi
+                    else
+                        indentation=''
+                    fi
+                    messagesToBePrinted+=( "${indentation}${color}${1//%/%%}" )
+                    lastStringWasEmph='FALSE'
+                fi
+                emphNextString='FALSE'
+                ;;
+        esac
+        shift
+    done
+    # Last message has no endline, add 'finalEndline' to it
+    messagesToBePrinted[-1]+="${finalEndline}"
+    set -- "${messagesToBePrinted[@]}"
+    # Print first line
+    printf "\e[1m${color}${labelToBePrinted}\e[0m $1"
+    shift
+    # Print possible additional lines
+    while [[ $# -gt 0 ]]; do
+        printf "$1"
+        shift
+    done
     if [[ ${label} = 'INTERNAL' ]]; then
         printf "${labelToBePrinted//?/ } Please, contact developers.\n"
     fi
