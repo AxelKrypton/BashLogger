@@ -48,7 +48,7 @@ By default, errors messages (`ERROR`, `FATAL` and `INTERNAL`) are printed to sta
    * `PrintInternalAndExit` or `Print_Internal_And_Exit`
    
    Note that either of the two syntaxes produces identical results and the reason both are provided is that then you might pick up that with a name closer to the convention used in your codebase.
-1. Each function must be followed by at least one argument (possibly empty, but not made of '\n' only).
+1. Each function must be followed by at least one argument (possibly empty, but not made of `\n` only).
    Each argument is printed on a new line, prepending the level label to the first argument and just spaces to the following ones.
    Any argument can be prepended by `--emph` and this makes the following string be emphasized, i.e. printed in a standing out color (run the `TestLogger.bash` script to get an example).
    Note that a trailing `--emph` argument will be printed literally in the default level color, as well as if `--emph` is given twice in a row (this time is printed in the emphasized color).
