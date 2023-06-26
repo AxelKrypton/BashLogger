@@ -51,6 +51,8 @@ By default, errors messages (`ERROR`, `FATAL` and `INTERNAL`) are printed to sta
 1. Each function must be followed by at least one argument (possibly empty, but not made of `\n` only).
    Each argument is printed on a new line, prepending the level label to the first argument and just spaces to the following ones.
    Any argument can be prepended by `--emph` and this makes the following string be emphasized, i.e. printed in a standing out color (run the `TestLogger.bash` script to get an example).
+   An emphasised string is considered to be part of the _same_ line and, strictly speaking, it means that not all arguments are printed on new lines.
+   This is surely a desired and intuitive default behaviour and manual `\n` can be used to cope with different wishes.
    Note that a trailing `--emph` argument will be printed literally in the default level color, as well as if `--emph` is given twice in a row (this time is printed in the emphasized color).
 
    Each argument is printed to the chosen fd (which duplicates the standard output when the logger is sourced).
