@@ -19,7 +19,7 @@
 #
 #----------------------------------------------------------------------------------------
 #
-# The logger will print output to the chosen file descriptor (by default 42). This is
+# The logger will print output to the chosen file descriptor (by default 9). This is
 # done (instead of simply let it print to standard output) to be able to use the logger
 # in functions that "return" by printing to stdout and that are meant to be called in $().
 #
@@ -32,7 +32,7 @@
 # NOTE: Nothing is done if this file is executed and not sourced!
 #
 if [[ "${BASH_SOURCE[0]}" != "${0}" ]]; then
-    BSHLGGR_outputFd=42
+    BSHLGGR_outputFd=9
     BSHLGGR_defaultExitCode=1
     while [[ $# -gt 0 ]]; do
         case "$1" in

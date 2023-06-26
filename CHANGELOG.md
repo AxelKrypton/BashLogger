@@ -4,7 +4,7 @@ All notable changes to the `BashLogger` will be documented in this file.
 
 Strictly speaking, this project does not adhere to [Semantic Versioning](http://semver.org/spec/v2.0.0.html), but it follows some aspects inspired from it.
 In particular, given a version number `X.Y`,
- - `Y` is incremented for minor changes (e.g. bug fixes) and minor new features and 
+ - `Y` is incremented for minor changes (e.g. bug fixes) and minor new features and
  - `X` for major ones.
 
 In this project, version `1.0` is considered to be reached when the logger starts to be _complete_ in view of the developers.
@@ -20,6 +20,8 @@ Any of the releases before is stable and usable, though.
 ---
 
 ## [Unreleased]
+
+ * :white_check_mark: Use 9 as default output file descriptor (as Bash discourages larger ones)
 
 ---
 

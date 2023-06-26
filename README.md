@@ -33,7 +33,7 @@ By default, errors messages (`ERROR`, `FATAL` and `INTERNAL`) are printed to sta
    #### Available options at source time:
 
    **`--fd N`**  
-   Use `N` as logger output file descriptor, with `0<N<255` (default: `N=42`).
+   Use `N` as logger output file descriptor, with `0<N<255` (default: `N=9`).
 
    **`--default-exit-code N`**  
    Use `N` as default exit code for `FATAL` and `INTERNAL`, with `0≤N≤255` (default: `N=1`). The `exit_code` variable can be used to change this either globally or on a per-case basis (see below).
