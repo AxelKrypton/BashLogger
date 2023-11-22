@@ -205,12 +205,19 @@ function __static__Logger()
         shift
     fi
     # Print out initial new-lines before label suppressing first argument if it was endlines only
-    while [[ $1 =~ ^\\n ]]; do
+    # Note that endlines could be either '\n' or $'\n' and we want to deal with both.
+    local new_first_argument
+    while [[ $1 =~ ^\\n || "${1:0:1}" = $'\n' ]]; do
         printf '\n'
-        if [[ "${1/#\\n/}" = '' ]]; then
+        if [[ $1 =~ ^\\n ]]; then
+            new_first_argument="${1/#\\n/}"
+        elif [[ "${1:0:1}" = $'\n' ]]; then
+            new_first_argument="${1/#$'\n'/}"
+        fi
+        if [[ "${new_first_argument}" = '' ]]; then
             shift
         else
-            set -- "${1/#\\n/}" "${@:2}"
+            set -- "${new_first_argument}" "${@:2}"
         fi
     done
     # Ensure something to print was given
@@ -219,7 +226,7 @@ function __static__Logger()
     fi
     # Parse all arguments and save messages for later, possibly modified
     local messagesToBePrinted emphNextString lastStringWasEmph indentation\
-          message index twoChars
+          message index oneChar twoChars
     local -r const_indentation="${labelToBePrinted//?/ } "
     messagesToBePrinted=()
     emphNextString='FALSE'
@@ -266,12 +273,15 @@ function __static__Logger()
                     #       cannot be one at start (for-loop starts at 1 and we set message with 0th char)
                     message="${1:0:1}"
                     for ((index=1; index<${#1}; index++)); do
+                        oneChar="${1:${index}:1}"   # one chatacter  from index
                         twoChars="${1:${index}:2}"  # two chatacters from index
                         if [[ "${twoChars}" = '\n' && "${1:$((index-1)):1}" != '\' ]]; then
                             message+="\n${const_indentation}"
                             (( index++ ))
+                        elif [[ "${oneChar}" = $'\n' ]]; then
+                            message+="\n${const_indentation}"
                         else
-                            message+="${twoChars:0:1}"  # the first of the two chars
+                            message+="${oneChar}"
                         fi
                     done
                     # Finally add message to list of messages
