@@ -229,8 +229,7 @@ function __static__Logger()
         __static__Logger 'INTERNAL' "${FUNCNAME} called without message (or with new lines only)!"
     fi
     # Parse all arguments and save messages for later, possibly modified
-    local messagesToBePrinted emphNextString lastStringWasEmph indentation\
-          message index oneChar twoChars
+    local messagesToBePrinted emphNextString lastStringWasEmph indentation message
     local -r const_indentation="${labelToBePrinted//?/ } "
     messagesToBePrinted=()
     emphNextString='FALSE'
@@ -258,7 +257,8 @@ function __static__Logger()
                 fi
                 # Set color and replace % by %% for later printf
                 if [[ ${emphNextString} = 'TRUE' ]]; then
-                    messagesToBePrinted+=( "${emphColor}${1//%/%%}" )
+                    message=$(__static__ReplaceEndlinesInMessage "$1")
+                    messagesToBePrinted+=( "${emphColor}${message//%/%%}" )
                     lastStringWasEmph='TRUE'
                 else
                     if [[ ${lastStringWasEmph} = 'FALSE' ]]; then
@@ -268,27 +268,7 @@ function __static__Logger()
                     else
                         indentation=''
                     fi
-                    # Go through the message to be added character by character and prepend indentation
-                    # to literal '\n' -> Do this with pure bash not to rely on external tools. Using the
-                    # BASH_REMATCH array would make it tougher to iterate "left to right" hitting the replaced
-                    # patterns only once in a general fashion.
-                    #
-                    # NOTE: We already parse above '\n' at the beginning of a message and hence we assume there
-                    #       cannot be one at start (for-loop starts at 1 and we set message with 0th char)
-                    message="${1:0:1}"
-                    for ((index=1; index<${#1}; index++)); do
-                        oneChar="${1:${index}:1}"   # one chatacter  from index
-                        twoChars="${1:${index}:2}"  # two chatacters from index
-                        if [[ "${twoChars}" = '\n' && "${1:$((index-1)):1}" != '\' ]]; then
-                            message+="\n${const_indentation}"
-                            (( index++ ))
-                        elif [[ "${oneChar}" = $'\n' ]]; then
-                            message+="\n${const_indentation}"
-                        else
-                            message+="${oneChar}"
-                        fi
-                    done
-                    # Finally add message to list of messages
+                    message=$(__static__ReplaceEndlinesInMessage "$1")
                     messagesToBePrinted+=( "${indentation}${color}${message//%/%%}" )
                     lastStringWasEmph='FALSE'
                 fi
@@ -316,6 +296,34 @@ function __static__Logger()
     if [[ ${label} =~ ^(FATAL|INTERNAL)$ ]]; then
         exit "${exit_code:-${BSHLGGR_defaultExitCode}}"
     fi
+}
+
+function __static__ReplaceEndlinesInMessage()
+{
+    # Go through the message to be added character by character and prepend indentation
+    # to literal '\n' -> Do this with pure bash not to rely on external tools. Using the
+    # BASH_REMATCH array would make it tougher to iterate "left to right" hitting the replaced
+    # patterns only once in a general fashion.
+    #
+    # NOTE: It is assumed here that the caller has defined the 'const_indentation' variable.
+    local index oneChar twoChars
+    message=''
+    for ((index=0; index<${#1}; index++)); do
+        oneChar="${1:${index}:1}"   # one chatacter  from index
+        twoChars="${1:${index}:2}"  # two chatacters from index
+        if [[ "${twoChars}" = '\n' ]]; then
+            if [[ ${index} -eq 0 || "${1:$((index-1)):1}" != '\' ]]; then
+                message+="\n${const_indentation}"
+                (( index++ ))
+                continue
+            fi
+        elif [[ "${oneChar}" = $'\n' ]]; then
+            message+="\n${const_indentation}"
+            continue
+        fi
+        message+="${oneChar}"
+    done
+    printf '%s' "${message}"
 }
 
 function __static__IsLevelOn()

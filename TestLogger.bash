@@ -21,18 +21,26 @@
 trap 'printf "\n"' EXIT
 source Logger.bash "$@" || exit 1
 
-Print_Trace              '\nTrace message '       --emph 'highlighted' ' VS normal'
-Print_Debug              '\nDebug message '       --emph 'highlighted' ' VS normal'
-Print_Info               '\nInformation message 100% ' --emph 'highlighted' ' VS normal'
-Print_Info               $'\nText with literal\nendline'
-Print_Info               'Text with trailing \\n and following --emph text\n' --emph 'hello 100%'
+Print_Trace                  '\nTrace message '         --emph 'highlighted' ' VS normal'
+Print_Debug                  '\nDebug message '         --emph 'highlighted' ' VS normal'
+Print_Info                   '\nInformation message '   --emph 'highlighted' ' VS normal'
+Print_Attention              '\n' 'Attention message '  --emph 'highlighted' ' VS normal'
+Print_Warning                '\n' 'Warning message '    --emph 'highlighted' ' VS normal'
+Print_Error                  '\n' 'Error '              --emph 'highlighted' ' VS normal'
+(
+    Print_Fatal_And_Exit     '\n' 'Fatal error exit! '  --emph 'highlighted' ' VS normal'
+    Print_Internal_And_Exit  '\n' 'Developer error '    --emph 'highlighted' ' VS normal'
+)
+
+if [[ "${TEST}" = '' ]]; then
+    exit 0
+fi
+
+Print_Info               '\nTry 100% ' --emph 'highlighted' ' VS normal'
+Print_Info               $'\nText with literal\nendline' --emph $'\nalso in\nemphasized string'
+Print_Info               'Text with trailing \\n and following --emph text\n' --emph '\nwith \\n\nalso in it'
 Print_Info               'Trailing' '--emph'
 Print_Info               --emph '--emph'
 Print_Info               --emph
 Print_Info               ''
 Print_Info               '\n\n'
-Print_Attention          '\n' 'Attention message '   --emph 'highlighted' ' VS normal'
-Print_Warning            '\n' 'Warning message '     --emph 'highlighted' ' VS normal'
-Print_Error              '\n' 'Error '               --emph 'highlighted' ' VS normal'
-( Print_Fatal_And_Exit   '\n' 'Fatal error exit! '   --emph 'highlighted' ' VS normal' )
-Print_Internal_And_Exit  '\n' 'Developer error '     --emph 'highlighted' ' VS normal'
