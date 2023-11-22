@@ -218,7 +218,9 @@ function __static__Logger()
         __static__Logger 'INTERNAL' "${FUNCNAME} called without message (or with new lines only)!"
     fi
     # Parse all arguments and save messages for later, possibly modified
-    local messagesToBePrinted emphNextString lastStringWasEmph indentation index
+    local messagesToBePrinted emphNextString lastStringWasEmph indentation\
+          message index twoChars
+    local -r const_indentation="${labelToBePrinted//?/ } "
     messagesToBePrinted=()
     emphNextString='FALSE'
     lastStringWasEmph='FALSE'
@@ -255,7 +257,25 @@ function __static__Logger()
                     else
                         indentation=''
                     fi
-                    messagesToBePrinted+=( "${indentation}${color}${1//%/%%}" )
+                    # Go through the message to be added character by character and prepend indentation
+                    # to literal '\n' -> Do this with pure bash not to rely on external tools. Using the
+                    # BASH_REMATCH array would make it tougher to iterate "left to right" hitting the replaced
+                    # patterns only once in a general fashion.
+                    #
+                    # NOTE: We already parse above '\n' at the beginning of a message and hence we assume there
+                    #       cannot be one at start (for-loop starts at 1 and we set message with 0th char)
+                    message="${1:0:1}"
+                    for ((index=1; index<${#1}; index++)); do
+                        twoChars="${1:${index}:2}"  # two chatacters from index
+                        if [[ "${twoChars}" = '\n' && "${1:$((index-1)):1}" != '\' ]]; then
+                            message+="\n${const_indentation}"
+                            (( index++ ))
+                        else
+                            message+="${twoChars:0:1}"  # the first of the two chars
+                        fi
+                    done
+                    # Finally add message to list of messages
+                    messagesToBePrinted+=( "${indentation}${color}${message//%/%%}" )
                     lastStringWasEmph='FALSE'
                 fi
                 emphNextString='FALSE'

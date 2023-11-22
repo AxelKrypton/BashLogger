@@ -23,7 +23,8 @@ source Logger.bash "$@" || exit 1
 
 Print_Trace              '\nTrace message '       --emph 'highlighted' ' VS normal'
 Print_Debug              '\nDebug message '       --emph 'highlighted' ' VS normal'
-Print_Info               '\nInformation message ' --emph 'highlighted' ' VS normal'
+Print_Info               '\nInformation message 100% ' --emph 'highlighted' ' VS normal'
+Print_Info               '\nText with trailing \\n and following --emph text\n' --emph 'hello 100%'
 Print_Info               '\nTrailing' '--emph'
 Print_Info               --emph '--emph'
 Print_Info               --emph
