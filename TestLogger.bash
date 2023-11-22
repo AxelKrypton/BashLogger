@@ -30,6 +30,7 @@ Print_Info               'Trailing' '--emph'
 Print_Info               --emph '--emph'
 Print_Info               --emph
 Print_Info               ''
+Print_Info               '\n\n'
 Print_Attention          '\n' 'Attention message '   --emph 'highlighted' ' VS normal'
 Print_Warning            '\n' 'Warning message '     --emph 'highlighted' ' VS normal'
 Print_Error              '\n' 'Error '               --emph 'highlighted' ' VS normal'

@@ -21,8 +21,9 @@ Any of the releases before is stable and usable, though.
 
 ## [Unreleased]
 
- * :white_check_mark: Use 9 as default output file descriptor (as Bash discourages larger ones)
+ * :white_check_mark: Let single argument made of endlines only be accepted by logger functions
  * :sos: Make all lines be correctly indented when `\n` is used in function arguments
+ * :white_check_mark: Use 9 as default output file descriptor (as Bash discourages larger ones)
 
 ---
 

@@ -215,7 +215,11 @@ function __static__Logger()
             new_first_argument="${1/#$'\n'/}"
         fi
         if [[ "${new_first_argument}" = '' ]]; then
-            shift
+            if [[ $# -eq 1 ]]; then
+                return
+            else
+                shift
+            fi
         else
             set -- "${new_first_argument}" "${@:2}"
         fi

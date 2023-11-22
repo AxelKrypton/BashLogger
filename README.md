@@ -48,7 +48,8 @@ By default, errors messages (`ERROR`, `FATAL` and `INTERNAL`) are printed to sta
    * `PrintInternalAndExit` or `Print_Internal_And_Exit`
    
    Note that either of the two syntaxes produces identical results and the reason both are provided is that then you might pick up that with a name closer to the convention used in your codebase.
-1. Each function must be followed by at least one argument (possibly empty, but not made of `\n` only).
+1. Each function must be followed by at least one argument (possibly empty).
+   If the only provided argument is made of `\n` only, that amount of empty lines is printed to the corresponding file descriptor and nothing more (e.g. no label).
    Each argument is printed on a new line, prepending the level label to the first argument and just spaces to the following ones.
    Any argument can be prepended by `--emph` and this makes the following string be emphasized, i.e. printed in a standing out color (run the `TestLogger.bash` script to get an example).
    An emphasised string is considered to be part of the _same_ line and, strictly speaking, it means that not all arguments are printed on new lines.
@@ -58,6 +59,12 @@ By default, errors messages (`ERROR`, `FATAL` and `INTERNAL`) are printed to sta
    Each argument is printed to the chosen fd (which duplicates the standard output when the logger is sourced).
    **This means that you can use the logger in a function and still capture its standard output via the `$(call_to_function)` syntax.**
    This works because command expansion `$()` captures the standard output only!
+
+   The logger functions should correctly deal with both literal `\n` and interpreted `$'\n'`.
+   These will split the message and indent the second line appropriately.
+   However, this should rarely be used as multiple arguments achieve the same and avoid the user having to manually deal with endlines.
+   Resulting code is therefore also more readable and a long bash line can be split more easily if it is made of multiple arguments.
+   A use case for a literal `\n` might be at the end of an argument when the following one is emphasized and the user wishes the latter to start on a new line.
 1. By default, both `PrintFatalAndExit` and `PrintInternalAndExit` will exit with exit code 1 (general failure).
    You can however use the `exit_code` variable to change this either globally or on a per-case basis.
    E.g. `exit_code=42 PrintFatalAndExit "Oh no!"` will use 42 as exit code (and the `exit_code` variable will not be changed in the calling environment).
