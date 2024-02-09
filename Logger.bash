@@ -1,5 +1,5 @@
 #
-#  Copyright (c) 2019,2023
+#  Copyright (c) 2019,2023-2024
 #    Alessandro Sciarra <sciarra@itp.uni-frankfurt.de>
 #
 #  This file is part of BashLogger.
@@ -147,6 +147,8 @@ function __static__Logger()
 {
     if [[ $# -lt 1 ]]; then
         __static__Logger 'INTERNAL' "${FUNCNAME} called without label!"
+    elif [[ $# -lt 2 ]]; then
+        set -- "$1" '' # Set empty message if none provided
     fi
     local label labelLength labelToBePrinted color emphColor finalEndline restoreDefault
     finalEndline='\n'
