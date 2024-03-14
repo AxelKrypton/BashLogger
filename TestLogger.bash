@@ -36,9 +36,13 @@ if [[ "${TEST}" = '' ]]; then
     exit 0
 fi
 
+set -o pipefail -o nounset -o errexit
+shopt -s extglob inherit_errexit
+
 Print_Info               '\nTry 100% ' --emph 'highlighted' ' VS normal'
 Print_Info               $'\nText with literal\nendline' --emph $'\nalso in\nemphasized string'
 Print_Info               'Text with trailing \\n and following --emph text\n' --emph '\nwith \\n\nalso in it'
+Print_Info               'Text with --emph text followed by text beginning with \\n ' --emph 'emph text' '\nother text'
 Print_Info               'Trailing' '--emph'
 Print_Info               --emph '--emph'
 Print_Info               --emph
